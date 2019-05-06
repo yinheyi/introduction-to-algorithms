@@ -10,7 +10,7 @@
 *   Email: chinayinheyi@163.com
 *   Version: 1.0
 *   Created Time: 2019年05月06日 星期一 22时22分57秒
-*   Modifed Time: 2019年05月07日 星期二 00时24分34秒
+*   Modifed Time: 2019年05月07日 星期二 00时28分51秒
 *   Blog: http://www.cnblogs.com/yinheyi
 *   Github: https://github.com/yinheyi
 *   
@@ -80,14 +80,12 @@ void Merge(int array[], int nStart_, int nMiddle_, int nEnd_, CompareFunc comp)
 		/* do noting */
 	}
 
-
 	// 数据交换
 	memcpy(array + nStart_, _pTempArray, sizeof(int) * (nEnd_ - nStart_));
 
 	delete [] _pTempArray;
 	_pTempArray = nullptr;
 }
-
 
 // 归并排序功能实现函数
 void MergeSort(int array[], int nStart_, int nEnd_, CompareFunc comp)
@@ -105,13 +103,11 @@ void MergeSort(int array[], int nStart_, int nEnd_, CompareFunc comp)
 	Merge(array, nStart_, _nMiddle, nEnd_, comp);
 }
 
-
 // 比较函数
 bool less(int lhs, int rhs)
 {
 	return lhs < rhs;
 }
-
 
 // 打印数组函数
 void PrintArray(int array[], int nLength_)
@@ -127,26 +123,26 @@ void PrintArray(int array[], int nLength_)
 	std::cout << std::endl;
 }
 
-
-
 /***************    main.c     *********************/
 int main(int argc, char* argv[])
 {
+	// 测试1
 	int array[10] = {1, -1, 1, 231321, -12321, -1, -1, 123, -213, -13};
 	PrintArray(array, 10);
 	MergeSort(array, 0, 10, less);
 	PrintArray(array, 10);
 
+	// 测试2
 	int array2[1] = {1};
 	PrintArray(array2, 1);
 	MergeSort(array2, 0, 1, less);
 	PrintArray(array2, 1);
 
+	// 测试3
 	int array3[2] = {1, -1};
 	PrintArray(array3, 2);
 	MergeSort(array3, 0, 2, less);
 	PrintArray(array3, 2);
-
 
 	return 0;
 }
