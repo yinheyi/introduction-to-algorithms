@@ -10,7 +10,7 @@
 *   Email: chinayinheyi@163.com
 *   Version: 1.0
 *   Created Time: 2019年05月06日 星期一 22时22分57秒
-*   Modifed Time: 2019年05月06日 星期一 23时46分55秒
+*   Modifed Time: 2019年05月07日 星期二 00时24分34秒
 *   Blog: http://www.cnblogs.com/yinheyi
 *   Github: https://github.com/yinheyi
 *   
@@ -44,36 +44,45 @@ void Merge(int array[], int nStart_, int nMiddle_, int nEnd_, CompareFunc comp)
 	if (array == nullptr || nStart_ >= nMiddle_ || nMiddle_ >= nEnd_)
 		return;
 
-	int* _pArrayBegin = array + nStart_;		// 数组的起始位置的指针，后面会使用到。
-	int _nCount = nEnd_ - nStart_;
 	// 建立一个临时数组存放中间数据
 	int _nIndex = 0;
-	int* _pTempArray = new int[nEnd_ - nStart_]{0};
+	int* _pTempArray = new int[nEnd_ - nStart_];
 
 	// 对两个子数组进行合并
-	while (nStart_ < nMiddle_ && nMiddle_ < nEnd_)
+	int _nStartChange = nStart_;
+	int _nMiddleChange = nMiddle_;
+	while (_nStartChange < nMiddle_ && _nMiddleChange < nEnd_)
 	{
-		if (comp(array[nStart_],  array[nMiddle_]))
+		if (comp(array[_nStartChange],  array[_nMiddleChange]))
 		{
-			_pTempArray[_nIndex] = array[nStart_];
-			++nStart_;
+			_pTempArray[_nIndex] = array[_nStartChange];
+			++_nStartChange;
 		}
 		else
 		{
-			_pTempArray[_nIndex] = array[nMiddle_];
-			++nMiddle_;
+			_pTempArray[_nIndex] = array[_nMiddleChange];
+			++_nMiddleChange;
 		}
 		++_nIndex;
 	}
 
-	// 把不为空的子数组的元素追加到临时数组中去（都为空时，也没有问题）
-	if (nStart_ < nMiddle_)
-		memcpy(_pTempArray + _nIndex, array + nStart_, sizeof(int) * (nMiddle_ - nStart_));
+	// 把不为空的子数组的元素追加到临时数组中去
+	if (_nStartChange < nMiddle_)
+	{
+		memcpy(_pTempArray + _nIndex, array + _nStartChange, sizeof(int) * (nMiddle_ - _nStartChange));
+	}
+	else if (_nMiddleChange < nEnd_)
+	{
+		memcpy(_pTempArray + _nIndex, array + _nMiddleChange, sizeof(int) * (nEnd_ - _nMiddleChange));
+	}
 	else
-		memcpy(_pTempArray + _nIndex, array + nMiddle_, sizeof(int) * (nEnd_ - nMiddle_));
+	{
+		/* do noting */
+	}
+
 
 	// 数据交换
-	memcpy(_pArrayBegin, _pTempArray, sizeof(int) * _nCount);
+	memcpy(array + nStart_, _pTempArray, sizeof(int) * (nEnd_ - nStart_));
 
 	delete [] _pTempArray;
 	_pTempArray = nullptr;
@@ -123,12 +132,21 @@ void PrintArray(int array[], int nLength_)
 /***************    main.c     *********************/
 int main(int argc, char* argv[])
 {
-	int array[10] = {1, 3, -1, -123, 53, 1, 111232, -1, 13134, 1};
+	int array[10] = {1, -1, 1, 231321, -12321, -1, -1, 123, -213, -13};
 	PrintArray(array, 10);
-
 	MergeSort(array, 0, 10, less);
-
 	PrintArray(array, 10);
+
+	int array2[1] = {1};
+	PrintArray(array2, 1);
+	MergeSort(array2, 0, 1, less);
+	PrintArray(array2, 1);
+
+	int array3[2] = {1, -1};
+	PrintArray(array3, 2);
+	MergeSort(array3, 0, 2, less);
+	PrintArray(array3, 2);
+
 
 	return 0;
 }
