@@ -10,7 +10,7 @@
 *   Email: chinayinheyi@163.com
 *   Version: 1.0
 *   Created Time: 2019年05月07日 星期二 21时41分02秒
-*   Modifed Time: 2019年05月08日 星期三 00时33分05秒
+*   Modifed Time: 2019年05月08日 星期三 00时36分38秒
 *   Blog: http://www.cnblogs.com/yinheyi
 *   Github: https://github.com/yinheyi
 *   
@@ -27,7 +27,7 @@
 // 		4. 当一个堆共n个元素时，它的高度为floor(logN).
 //
 //                    1
-//				  /       \
+//                /       \
 //             2             3
 //           /   \         /    \
 //         4      5       6       7
@@ -40,7 +40,7 @@
 //     2. 当孩子结点的下标为j时，父结点的下标为（j-1)/2.
 //
 //                    0
-//				  /       \
+//                /       \
 //             1             2
 //           /   \         /    \
 //         3      4       5       6
