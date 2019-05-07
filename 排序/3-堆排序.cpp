@@ -10,7 +10,7 @@
 *   Email: chinayinheyi@163.com
 *   Version: 1.0
 *   Created Time: 2019年05月07日 星期二 21时41分02秒
-*   Modifed Time: 2019年05月07日 星期二 23时48分51秒
+*   Modifed Time: 2019年05月08日 星期三 00时33分05秒
 *   Blog: http://www.cnblogs.com/yinheyi
 *   Github: https://github.com/yinheyi
 *   
@@ -55,7 +55,21 @@
 #define LEFT(i) (((i) << 1) + 1)
 #define RIGHT(i) (((i) + 1) << 1)
 #define PARENT(i) (((i) - 1) >> 1)
+
+// 大于比较函数
+bool less(int lhs, int rhs)
+{
+	return lhs < rhs;
+}
+
+// 大于比较函数
+bool greate(int lhs, int rhs)
+{
+	return lhs > rhs;
+}
 typedef bool (*Comp)(int, int);
+
+// 交换两个元素的值
 static inline void swap(int& lhs, int & rhs)
 {
 	int _nTemp = lhs;
@@ -74,20 +88,26 @@ void Heapify(int array[], int nLength_, int nIndex_, Comp CompFunc)
 
 	int _nLeft = LEFT(nIndex_);
 	int _nRight = RIGHT(nIndex_); 
-	if (!CompFunc(array[nIndex_], array[_nLeft]))
+
+	// 初始化最大值节点的下标;
+	int _nLargest = nIndex_;
+	if ( _nLeft < nLength_ && !CompFunc(array[_nLargest], array[_nLeft]))
 	{
-		swap(array[nIndex_], array[_nLeft]);
-		Heapify(array, nLength_, _nLeft, CompFunc);
+		_nLargest = _nLeft;
 	}
-	else if (!CompFunc(array[nIndex_], array[_nRight]))
+	if (_nRight < nLength_ && !CompFunc(array[_nLargest], array[_nRight]))
 	{
-		swap(array[nIndex_], array[_nRight]);
-		Heapify(array, nLength_, _nRight, CompFunc);
+		_nLargest = _nRight;
 	}
-	else
+
+	/* 此时不需要维护堆的性质，直接返回   */
+	if (_nLargest == nIndex_)
 	{
-		/*  此时不需要维护堆的性质  */ 
+		return;
 	}
+
+	swap(array[nIndex_], array[_nLargest]);
+	Heapify(array, nLength_, _nLargest, CompFunc);
 }
 
 // 使用一个数组建立一个最小堆或最大堆。
@@ -127,13 +147,37 @@ void HeapSort(int array[], int nLength_, Comp CompFunc)
 	BulidHeap(array, nLength_, CompFunc);
 	for (int i = nLength_; i >= 2; --i)
 	{
-		swap(array[0], array[i - 1]);
 		Heapify(array, i, 0, CompFunc);
+		swap(array[0], array[i - 1]);
 	}
 }
 
-/***************    main.c     *********************/
+
+/************    测试     *****************/
+#include <iostream>
+
+// 打印数组函数
+void PrintArray(int array[], int nLength_)
+{
+	if (nullptr == array || nLength_ <= 0)
+		return;
+
+	for (int i = 0; i < nLength_; ++i)
+	{
+		std::cout << array[i] << " ";
+	}
+
+	std::cout << std::endl;
+}
+
+// 主函数
 int main(int argc, char* argv[])
 {
+	int array[10] = { 100, 1, 1, -1243, 0, 223, 443, 123, -12, -129};
+
+	PrintArray(array, 10);
+	HeapSort(array, 10, greate);
+	PrintArray(array, 10);
+
 	return 0;
 }
