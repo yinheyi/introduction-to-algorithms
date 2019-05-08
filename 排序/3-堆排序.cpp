@@ -10,7 +10,7 @@
 *   Email: chinayinheyi@163.com
 *   Version: 1.0
 *   Created Time: 2019年05月07日 星期二 21时41分02秒
-*   Modifed Time: 2019年05月08日 星期三 00时36分38秒
+*   Modifed Time: 2019年05月08日 星期三 23时23分58秒
 *   Blog: http://www.cnblogs.com/yinheyi
 *   Github: https://github.com/yinheyi
 *   
@@ -56,7 +56,7 @@
 #define RIGHT(i) (((i) + 1) << 1)
 #define PARENT(i) (((i) - 1) >> 1)
 
-// 大于比较函数
+// 小于比较函数
 bool less(int lhs, int rhs)
 {
 	return lhs < rhs;
