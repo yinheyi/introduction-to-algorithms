@@ -10,14 +10,14 @@
 *   Email: chinayinheyi@163.com
 *   Version: 1.0
 *   Created Time: 2019年05月07日 星期二 21时41分02秒
-*   Modifed Time: 2019年05月08日 星期三 23时23分58秒
+*   Modifed Time: 2019年05月09日 星期四 22时19分53秒
 *   Blog: http://www.cnblogs.com/yinheyi
 *   Github: https://github.com/yinheyi
 *   
 ***********************************************************************/
 
 
-// 堆使用一个数组表示， 它可以当作一个近似的完全二叉树，除了最底层之外，其它层都是满的，
+// 堆使用一个数组表示， 它可以当作一个完全二叉树，除了最底层之外，其它层都是满的，
 // 并且最底层也是从左到右填充的。
 //
 // 当堆的下标（数组的下标）从1开始时比较好计算。因为：
@@ -145,10 +145,10 @@ void HeapSort(int array[], int nLength_, Comp CompFunc)
 		return;
 
 	BulidHeap(array, nLength_, CompFunc);
-	for (int i = nLength_; i >= 2; --i)
+	for (int i = nLength_; i >= 2; /* 循环内 */)		// i表示当前堆的大小
 	{
+		swap(array[0], array[--i]);
 		Heapify(array, i, 0, CompFunc);
-		swap(array[0], array[i - 1]);
 	}
 }
 

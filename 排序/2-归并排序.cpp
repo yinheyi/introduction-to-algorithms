@@ -10,7 +10,7 @@
 *   Email: chinayinheyi@163.com
 *   Version: 1.0
 *   Created Time: 2019年05月06日 星期一 22时22分57秒
-*   Modifed Time: 2019年05月07日 星期二 00时28分51秒
+*   Modifed Time: 2019年05月09日 星期四 21时10分59秒
 *   Blog: http://www.cnblogs.com/yinheyi
 *   Github: https://github.com/yinheyi
 *   
@@ -53,15 +53,16 @@ void Merge(int array[], int nStart_, int nMiddle_, int nEnd_, CompareFunc comp)
 	int _nMiddleChange = nMiddle_;
 	while (_nStartChange < nMiddle_ && _nMiddleChange < nEnd_)
 	{
-		if (comp(array[_nStartChange],  array[_nMiddleChange]))
-		{
-			_pTempArray[_nIndex] = array[_nStartChange];
-			++_nStartChange;
-		}
-		else
+		// 此处的if中比较语句的安排可以保持稳定排序的特性。
+		if (comp(array[_nMiddleChange],  array[_nStartChange]))
 		{
 			_pTempArray[_nIndex] = array[_nMiddleChange];
 			++_nMiddleChange;
+		}
+		else
+		{
+			_pTempArray[_nIndex] = array[_nStartChange];
+			++_nStartChange;
 		}
 		++_nIndex;
 	}
