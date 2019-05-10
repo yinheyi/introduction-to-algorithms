@@ -10,7 +10,7 @@
 *   Email: chinayinheyi@163.com
 *   Version: 1.0
 *   Created Time: 2019年05月08日 星期三 21时54分04秒
-*   Modifed Time: 2019年05月10日 星期五 22时16分17秒
+*   Modifed Time: 2019年05月10日 星期五 22时29分24秒
 *   Blog: http://www.cnblogs.com/yinheyi
 *   Github: https://github.com/yinheyi
 *   
@@ -36,8 +36,8 @@
 #include <stdexcept>
 #include <iostream>
 static inline void swap(int&, int&);
-bool less(int lhs, int rhs);
-bool greate(int lhs, int rhs);
+static bool less(int lhs, int rhs);
+static bool greate(int lhs, int rhs);
 static void PrintArray(int array[], int nLength_);
 typedef bool (*Compare)(int, int);
 
@@ -162,13 +162,13 @@ inline void swap(int& lhs, int& rhs)
 }
 
 // 小于比较函数
-bool less(int lhs, int rhs)
+static bool less(int lhs, int rhs)
 {
 	return lhs < rhs;
 }
 
 // 大于比较函数
-bool greate(int lhs, int rhs)
+static bool greate(int lhs, int rhs)
 {
 	return lhs > rhs;
 }
