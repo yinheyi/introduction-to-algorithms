@@ -10,7 +10,7 @@
 *   Email: chinayinheyi@163.com
 *   Version: 1.0
 *   Created Time: 2019年05月11日 星期六 10时19分07秒
-*   Modifed Time: 2019年05月11日 星期六 13时22分53秒
+*   Modifed Time: 2019年05月11日 星期六 14时00分09秒
 *   Blog: http://www.cnblogs.com/yinheyi
 *   Github: https://github.com/yinheyi
 *   
@@ -32,6 +32,7 @@
 // 此时使用计数排序可以把时间复杂度降到O(n)上。
 // 2. 计数排序不是基于比较的排序算法，它基于计数策略。
 // 3. 写计数排序算法时，应该把它写成稳定排序的。
+// 4. 计数排序还是原址排序，它需要借助额外的内存空间。
 //
 // 计数排序代码如下：
 // 参数说明：array表示数组指针，nLength_表示数组的最大长度，nMaxNumber_表示数组元素中的最大值；
