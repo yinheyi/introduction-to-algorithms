@@ -10,7 +10,7 @@
 *   Email: chinayinheyi@163.com
 *   Version: 1.0
 *   Created Time: 2019年05月13日 星期一 21时06分20秒
-*   Modifed Time: 2019年05月13日 星期一 23时01分30秒
+*   Modifed Time: 2019年05月13日 星期一 23时05分52秒
 *   Blog: http://www.cnblogs.com/yinheyi
 *   Github: https://github.com/yinheyi
 *   
@@ -136,6 +136,27 @@ template <typename T>
 size_t forward_list<T>::size() const
 {
 	return m_nSize;
+}
+
+/********************    实现单向循环链表类    *************/
+// 对于实现单向循环链表类的话，很简单，对上面的类只需要改动一处
+// 即可， 即把构造函数修改如下：
+//
+// 修改前：
+template <typename T>
+forward_list<T>::forward_list()
+{
+	m_pHead = new Node<T>;
+	m_nSize = 0;
+}
+
+// 修改后：
+template <typename T>
+forward_list<T>::forward_list()
+{
+	m_pHead = new Node<T>;
+	m_pHead->pNext = m_pHead;
+	m_nSize = 0;
 }
 
 /**********************    测试程序     *************************/
