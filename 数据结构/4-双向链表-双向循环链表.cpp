@@ -10,7 +10,7 @@
 *   Email: chinayinheyi@163.com
 *   Version: 1.0
 *   Created Time: 2019年05月13日 星期一 23时20分45秒
-*   Modifed Time: 2019年05月14日 星期二 23时04分36秒
+*   Modifed Time: 2019年05月14日 星期二 23时06分48秒
 *   Blog: http://www.cnblogs.com/yinheyi
 *   Github: https://github.com/yinheyi
 *   
@@ -120,7 +120,7 @@ void list<T>::erase(Node<T>* pCurrent_)
 {
 	if (nullptr == pCurrent_)
 	{
-		std::cerr << "给定的指针参数为空，插入失败" << std::endl;
+		std::cerr << "给定的指针参数为空，删除失败" << std::endl;
 		return;
 	}
 
