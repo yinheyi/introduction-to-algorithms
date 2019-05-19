@@ -10,7 +10,7 @@
 *   Email: chinayinheyi@163.com
 *   Version: 1.0
 *   Created Time: 2019年05月13日 星期一 23时22分10秒
-*   Modifed Time: 2019年05月18日 星期六 23时26分10秒
+*   Modifed Time: 2019年05月19日 星期日 00时10分09秒
 *   Blog: http://www.cnblogs.com/yinheyi
 *   Github: https://github.com/yinheyi
 *   
@@ -80,7 +80,7 @@ void PreorderTraversal_ByRecursion(BinaryNode* pRoot_, pFunc CallbackFunc_)
 	// 递归遍历左子树
 	PreorderTraversal_ByRecursion(pRoot_->m_pLeft, CallbackFunc_);
 	// 递归遍历右子树
-	PreorderTraversal_ByRecursion(pRoot_->m_pLeft, CallbackFunc_);
+	PreorderTraversal_ByRecursion(pRoot_->m_pRight, CallbackFunc_);
 }
 
 /***************     基于循环的前序遍历      *******************/
@@ -164,9 +164,9 @@ void PostorderTraversal_ByRecursion(BinaryNode* pRoot_, pFunc CallbackFunc_)
 		return;
 
 	// 先递归遍历左子树
-	InorderTraversal_ByRecursion(pRoot_->m_pLeft, CallbackFunc_);
+	PostorderTraversal_ByRecursion(pRoot_->m_pLeft, CallbackFunc_);
 	// 其次递归遍历右子树
-	InorderTraversal_ByRecursion(pRoot_->m_pRight, CallbackFunc_);
+	PostorderTraversal_ByRecursion(pRoot_->m_pRight, CallbackFunc_);
 	// 最后遍历父结点
 	CallbackFunc_(pRoot_);
 }
@@ -186,7 +186,7 @@ void PostorderTraversal_ByLoop(BinaryNode* pRoot_, pFunc CallbackFunc_)
 		pRoot_ = pRoot_->m_pLeft;
 	}
 
-	while (_stackContainer.empty())
+	while (!_stackContainer.empty())
 	{
 		// 接下来，不能遍历栈顶的结点，因为如果该结点存在右子树,则需要去遍历右子树上的结点.
 		// 只要右子树不为空，就需要找右子树上最左的子结点, 重复该过程直到某个最左子结点的右
@@ -213,7 +213,7 @@ void PostorderTraversal_ByLoop(BinaryNode* pRoot_, pFunc CallbackFunc_)
 		// 上面的过程。
 		// b. 如果当前结点是父结点的右子结点，则接下来我们直接去遍历父结点即可,遍历完父结点后，
 		// 还需要继续判断父结点是否为祖结点的右子结点, 重复此过程，直接不满足条件为止。
-		while (_pCurrentNode == _stackContainer.top()->m_pRight)
+		while (!_stackContainer.empty() && _pCurrentNode == _stackContainer.top()->m_pRight)
 		{
 			_pCurrentNode = _stackContainer.top();
 			CallbackFunc_(_pCurrentNode);
@@ -252,6 +252,15 @@ void PrintNode(BinaryNode* pNode_);
 int main(int argc, char* argv[])
 {
 	BinaryNode* _pRoot = nullptr;
+
+	std::cout << "输入二叉树的前序遍历结果的序列, 建立一个二叉树. 我们假设二叉树的所有节点值都的为正整数," << std::endl;
+	std::cout << "如果结点的元素为空, 则使用0表示。例如我们输入1 2 0 4 3 5 0 0 6 0时，表示的二叉树为：" << std::endl;
+	std::cout << "                      1 " << std::endl;
+	std::cout << "                   /     \\" << std::endl;
+	std::cout << "                  2       3" << std::endl;
+	std::cout << "                   \\    /   \\" << std::endl;
+	std::cout << "                    4   5    6 " << std::endl << std::endl;
+	std::cout << "你输入的序列为：";
 	BuildBinaryTree(_pRoot, std::cin);
 
 	std::cout << "基于递归的前序遍历结果如下：" << std::endl;
