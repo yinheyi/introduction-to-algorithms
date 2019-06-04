@@ -10,7 +10,7 @@
 *   Email: chinayinheyi@163.com
 *   Version: 1.0
 *   Created Time: 2019年05月18日 星期六 16时38分08秒
-*   Modifed Time: 2019年06月04日 星期二 23时45分24秒
+*   Modifed Time: 2019年06月05日 星期三 00时12分48秒
 *   Blog: http://www.cnblogs.com/yinheyi
 *   Github: https://github.com/yinheyi
 *   
@@ -45,6 +45,8 @@ struct Node
 		Node* pParent_ = nullptr, Node* pLeft_ = nullptr, Node* pRight_ = nullptr);
 	// 获取该结点的平衡因子
 	int BF();
+	// 更新当前结点的高度
+	void UpdateHight();
 };
 
 // node的构造函数。
@@ -65,6 +67,14 @@ int Node::BF()
 	return _nLeftHight - _nRightHight;
 }
 
+// 更新当前结点的高度
+void Node::UpdateHight()
+{
+	int _nLeftHight = m_pLeft ? m_pLeft->m_nHight : 0;
+	int _nRightHight = m_pRight ? m_pRight->m_nHight : 0;
+	m_nHight = 1 + max(_nLeftHight, _nRightHight);
+}
+
 /********     平衡二叉搜索树类的定义    **********/
 class AVLTree
 {
@@ -77,8 +87,8 @@ public:
 	void erase(Node* pNode_);
 
 private:
-	Node* precursor();					// 返回前驱节点, 不存在返回空
-	Node* successor();					// 获取后驱节点，不存在返回空
+	Node* precursor(Node* pNode_);		// 返回前驱节点, 不存在返回空
+	Node* successor(Node* pNode_);		// 获取后驱节点，不存在返回空
 	void left_rotate(Node* pNode_);		// 对给定结点进行左旋
 	void right_rotate(Node* pNode_);	// 对给定结点进行右旋
 	void delete_tree(Node* pRoot_);
@@ -206,9 +216,7 @@ void AVLTree::insert(int nValue_)
 				return;
 
 			// 更新父结点的高度
-			int _nLeftHight = _pParent->m_pLeft ? _pParent->m_pLeft->m_nHight : 0;
-			int _nRightHight = _pParent->m_pRight ? _pParent->m_pRight->m_nHight : 0;
-			_pParent->m_nHight = 1 + max(_nLeftHight, _nRightHight);
+			_pParent->UpdateHight();
 
 			// 继续去检测父结点的平衡因子.
 			_pCurrent = _pCurrent->m_pParent;
@@ -243,17 +251,17 @@ void AVLTree::insert(int nValue_)
 // AVL树的删除操作:删除给定结点的指针。
 void AVLTree::erase(Node* pNode_)
 {
-
 }
 
 // 获取前驱结点，不存在时，返回空。
-Node* AVLTree::precursor()
+Node* AVLTree::precursor(Node* pNode_)
 {
 }
 
 // 返回后驱结点，不存在时，返回空。
-Node* AVLTree::successor()
+Node* AVLTree::successor(Node* pNode_)
 {
+
 }
 
 // 左旋操作
@@ -269,17 +277,25 @@ void AVLTree::left_rotate(Node* pNode_)
 	pNode_->m_pRight = _pRightNode->m_pLeft;
 	if (pNode_->m_pRight)
 		pNode_->m_pRight->m_pParent = pNode_;
+	pNode_->UpdateHight();
 
 	// 把当前结点作为右子结点的左子树
 	_pRightNode->m_pLeft = pNode_;
 	pNode_->m_pParent = _pRightNode;
+	_pRightNode->UpdateHight();
 
 	// 更新右子结点与父结点的关系
 	_pRightNode->m_pParent = _pParent;
-	if (_pParent  && _pParent->m_pLeft == pNode_)	// 父结点不为空且为左子结点
+	if (_pParent  && _pParent->m_pLeft == pNode_)	// 父结点不为空且为父结点的左子结点
+	{
 		_pParent->m_pLeft = _pRightNode;
-	else if (_pParent && _pParent->m_pRight == pNode_)	// 父结点不为空且为右子结点
+		_pParent->UpdateHight();
+	}
+	else if (_pParent && _pParent->m_pRight == pNode_)	//父结点不为空且为父结点的右子结点
+	{
 		_pParent->m_pRight = _pRightNode;
+		_pParent->UpdateHight();
+	}
 	else   // 如果父结点为空，则需要更新根结点
 		m_pRoot = _pRightNode;
 }
@@ -287,7 +303,37 @@ void AVLTree::left_rotate(Node* pNode_)
 // 右旋操作
 void AVLTree::right_rotate(Node* pNode_)
 {
+	if (!pNode_ || !pNode_->m_pLeft)
+		return;
 
+	Node* _pParent = pNode_->m_pParent;		// 父结点
+	Node* _pLeftNode = pNode_->m_pLeft;		// 左子结点
+
+	// 使用左子结点的右子树代替左子结点
+	pNode_->m_pLeft = _pLeftNode->m_pRight;
+	if (pNode_->m_pLeft)
+		pNode_->m_pLeft->m_pParent = pNode_;
+	pNode_->UpdateHight();
+
+	// 使用当前结点代替左子结点的右子树
+	_pLeftNode->m_pRight = pNode_;
+	pNode_->m_pParent = _pLeftNode;
+	pNode_->UpdateHight();
+
+	// 更新左子结点与父结点的关系
+	_pLeftNode->m_pParent = _pParent;
+	if (_pParent && _pParent->m_pLeft == pNode_)	// 父结点不为空且为父结点的左子结点 
+	{
+		_pParent->m_pLeft = _pLeftNode;
+		_pParent->UpdateHight();
+	}
+	else if (_pParent && _pParent->m_pRight == pNode_)	//父结点不为空且为父结点的右子结点
+	{
+		_pParent->m_pRight = _pLeftNode;
+		_pParent->UpdateHight();
+	}
+	else	// 父结点为空时，更新根结点
+		m_pRoot = _pLeftNode;
 }
 
 // 删除该AVL树,释放内存
@@ -312,6 +358,7 @@ int main(int argc, char* argv[])
 {
 	return 0;
 }
+
 
 
 
