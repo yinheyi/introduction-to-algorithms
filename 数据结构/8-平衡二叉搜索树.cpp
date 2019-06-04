@@ -10,7 +10,7 @@
 *   Email: chinayinheyi@163.com
 *   Version: 1.0
 *   Created Time: 2019年05月18日 星期六 16时38分08秒
-*   Modifed Time: 2019年05月31日 星期五 23时54分55秒
+*   Modifed Time: 2019年06月04日 星期二 23时45分24秒
 *   Blog: http://www.cnblogs.com/yinheyi
 *   Github: https://github.com/yinheyi
 *   
@@ -18,6 +18,7 @@
 #include <iostream>
 #include <cassert>
 #define abs(x) ((x) > 0 ? (x) : -1*(x))
+#define max(x,y) ((x) > (y) ? (x) : (y))
 
 // 1.平衡二叉搜索树在二叉搜索树的基础上增加了一个限制条件：要求左右子树的高度差不得大于1.
 // 2.平衡二叉搜索树又称作AVL树,AVL是它的两个发明者Adelson-Velskii和Landis名字中的字母。
@@ -33,24 +34,36 @@
 struct Node
 {
 	int m_nValue;
-	int m_nBF;		// 对于平衡二叉树来说，平衡因子为-1/0/1. (左子树高度-右子树的高度)
+	int m_nHight;   // 此处表示以该结点表示的树的高度,如果换成平衡因子的话也可以，但是在
+                    // 旋转过程中需要去维护平衡因子的变化，很麻烦。
 	Node* m_pParent;
 	Node* m_pLeft;
 	Node* m_pRight;
-	Node(int nValue_ = 0, int nBF_ = 0, 
+
+	// 构造函数
+	Node(int nValue_ = 0, int nHigh_ = 1, 
 		Node* pParent_ = nullptr, Node* pLeft_ = nullptr, Node* pRight_ = nullptr);
+	// 获取该结点的平衡因子
+	int BF();
 };
 
 // node的构造函数。
-Node::Node(int nValue_, int nBF_, Node* pParent_, Node* pLeft_, Node* pRight_)
+Node::Node(int nValue_, int nHigh_, Node* pParent_, Node* pLeft_, Node* pRight_)
 {
 	m_nValue = nValue_;
-	m_nBF = nBF_;
+	m_nHight = nHigh_; 
 	m_pParent = pParent_;
 	m_pLeft = pLeft_;
 	m_pRight = pRight_;
 }
 
+// 获取结点的平衡因子
+int Node::BF()
+{
+	int _nLeftHight = m_pLeft ? m_pLeft->m_nHight : 0;
+	int _nRightHight = m_pRight ? m_pRight->m_nHight : 0;
+	return _nLeftHight - _nRightHight;
+}
 
 /********     平衡二叉搜索树类的定义    **********/
 class AVLTree
@@ -105,7 +118,7 @@ Node* AVLTree::search(int nValue_)
 
 	// 如果与当前结点的值相同，则返回当前结点指针
 	// 如果小于当前结点的值，则去左子树进行继续查找
-	// 如果大于当前结点的值，则去右子树进行疆场查找
+	// 如果大于当前结点的值，则去右子树进行继续查找
 	Node* _pCurrent = m_pRoot;
 	while (_pCurrent)
 	{
@@ -124,14 +137,14 @@ Node* AVLTree::search(int nValue_)
 // 插入操作： 如果待拷入的值已经存在于AVL树中，则什么也不做。
 void AVLTree::insert(int nValue_)
 {
-	// 当树为空时，直接插入作为根结点即可
+	// 1. 当树为空时，直接插入作为根结点即可
 	if (!m_pRoot)
 	{
-		m_pRoot = new Node(nValue_, 0);		// 0表示平衡因子
+		m_pRoot = new Node(nValue_, 1);		// 0表示该结点的高度。
 		return;
 	}
 
-	// 先查找插入位置的父结点，该过程类似于查找操作
+	// 2. 先查找插入位置的父结点，该过程类似于查找操作
 	Node* _pCurrent = m_pRoot;
 	while (true)
 	{
@@ -152,16 +165,22 @@ void AVLTree::insert(int nValue_)
 			return;
 	}
 
-	// 进行插入操作, 并更新父结点的平衡因子
+	// 3. 进行插入操作, 并更新父结点的平衡因子
 	if (nValue_ < _pCurrent->m_nValue)
 	{
-		_pCurrent->m_pLeft = new Node(nValue_, 0);
-		++_pCurrent->m_nBF;
+		_pCurrent->m_pLeft = new Node(nValue_, 1);
+
+		// 如果右子树为空，则需要增加当前结点高度
+		if (!_pCurrent->m_pRight)
+			++_pCurrent->m_nHight;
 	}
 	else
 	{
-		_pCurrent->m_pRight = new Node(nValue_, 0);
-		--_pCurrent->m_nBF;
+		_pCurrent->m_pRight = new Node(nValue_, 1);
+
+		// 如果左子树为空，则需要增加当前结点的高度
+		if (!_pCurrent->m_pLeft)
+			++_pCurrent->m_nHight;
 	}
 
 	// 接下来，是插入的重点: 当插入后，可能增加了子树的高度，从而破坏了AVL树的平衡性质，
@@ -172,33 +191,38 @@ void AVLTree::insert(int nValue_)
 	// 了父结点表示子树的高度，此时需要沿着树向上去判断祖结点.....
 	// 3. 当插入后，父结点的平衡因子不会出现为-2或2的情况。
 	// 4. 第2步中的祖结点会可能会出现-2或2的情况，此时需要通过左旋/右旋/双旋进行调整。
-	//
-	// 平衡因子为0时，直接返回，不需要其它任何操作。
-	while (_pCurrent->m_nBF != 0)
+	
+
+	// 平衡因子不为0时，插入操作增加了当前结点的高度，可能会引起不平衡，所以需要进行
+	// 相关判断与操作
+	while (_pCurrent->BF() != 0)
 	{
-		if (_pCurrent->m_nBF == 1 || _pCurrent->m_nBF == -1)
+		// 此时，插入操作增加了当前结点的高度，需要更新父结点的高度，并继续检测父结点
+		if (_pCurrent->BF() == 1 || _pCurrent->BF() == -1)
 		{
-			// 当祖结点为空时，不需要调整，直接返回了。
-			if (!_pCurrent->m_pParent)
+			Node* _pParent = _pCurrent->m_pParent;
+			// 当父结点为空时，不需要调整，直接返回了。
+			if (!_pParent)
 				return;
 
-			// 根据父结点是祖结点的左孩子还是右孩子，去调整祖结点的平衡因子
-			if (_pCurrent == _pCurrent->m_pParent->m_pLeft)
-				++_pCurrent->m_pParent->m_nBF;
-			else
-				--_pCurrent->m_pParent->m_nBF;
+			// 更新父结点的高度
+			int _nLeftHight = _pParent->m_pLeft ? _pParent->m_pLeft->m_nHight : 0;
+			int _nRightHight = _pParent->m_pRight ? _pParent->m_pRight->m_nHight : 0;
+			_pParent->m_nHight = 1 + max(_nLeftHight, _nRightHight);
 
-			// 继续去检测祖结点的平衡因子.
+			// 继续去检测父结点的平衡因子.
 			_pCurrent = _pCurrent->m_pParent;
+			continue;
 		}
-		else if (_pCurrent->m_nBF == 2)
+
+		else if (_pCurrent->BF() == 2)
 		{
 			// 此时需要根据左子结点的平衡因子判断是进行单旋还是双旋
 			// 因为是插入操作，此时的左子结点的平衡因子不会出现0的情况.
 			// 当左子结点为平衡因为为1时，只需要对当前结点作一个右旋即可。
 			// 当左子结点的平衡因子为-1时，需要先对左子结点进行左旋操作，再对当前结点
 			// 进行右旋操作。
-			if (_pCurrent->m_pLeft->m_nBF == -1)
+			if (_pCurrent->m_pLeft->BF() == -1)
 				left_rotate(_pCurrent->m_pLeft);
 			right_rotate(_pCurrent);
 
@@ -206,9 +230,9 @@ void AVLTree::insert(int nValue_)
 			// 相同，因此没有必要继续向上检查，直接退出即可。
 			return;
 		}
-		else if (_pCurrent->m_nBF == -2)
+		else if (_pCurrent->BF() == -2)
 		{
-			if (_pCurrent->m_pRight->m_nBF == 1)
+			if (_pCurrent->m_pRight->BF() == 1)
 				right_rotate(_pCurrent->m_pRight);
 			left_rotate(_pCurrent);
 			return;
@@ -232,64 +256,32 @@ Node* AVLTree::successor()
 {
 }
 
-// 关于左旋与右旋操作
-// 在二叉搜索树时，发生左旋的情况有2种，一种是当前结点的平衡因子为-2时需要左旋。另一种当
-// 需要双旋操作时，第一次旋转也需要左旋，此时它的平衡因子为-1.
-// 情况一：当前结点的平衡因子为-2, 右子结点的平衡因子为0时：
-//          1                                   3
-//            \           对1左旋              /  \
-//             3      =============>          1    5
-//            /  \                             \
-//           4    5                             4
-//   此时情况只会发生在删除节点时,  a. 树的高度不变。
-//                                  b. 当前结点的平衡因子由-2变为-1.
-//                                  c. 右子结点的平衡因子由0变为1.
-//
-// 情况二：当前结点的平衡因子为-2, 右子结点的平衡因子为-1时：
-//           1                             
-//            \        对1左旋            
-//             2     ============>          2
-//              \                          /  \
-//               3                        1    3
-//   此种情况可能发生在删除和插入时，a. 树的高度不变
-//                                   b. 当前结点的平衡因子由-2变为0 
-//                                   c. 右子结点的平衡因子由-1变为0
-//
-// 情况三：当前结点的平衡因子为-2, 右子结点的平衡因子为-2时：
-//          1                                1                             4
-//        /   \                            /   \                         /   \
-//       2     3          对3右旋         2     4         对1左旋       1     3
-//           /   \      ==========>               \     ========>      /     /  \
-//          4     5                                3                  2     6    5
-//           \                                   /  \
-//            6                                 6     5
-//   此种情况发生在双旋的第二次是左旋的时, a. 树的高度减少1
-//                                         b. 当前结点的平衡因子由-2变为1
-//                                         c. 右子结点的平衡因子由-2变为0
-//
-// 情况四：当前结点的平衡因子为-1, 右子结点的平衡因子为0时：
-//            1                                 1
-//           /                                 /
-//          2           对1进行左旋           3
-//           \       ==============>         /
-//            3                             2
-//    此种情况发生在双旋的第一次为左旋时，a. 树的高度不变
-//                                        b. 当前结点的平衡因子由-1变为0
-//                                        c. 右子结点的平衡因子由0变为1
-//
-// 情况五：
-//
-//
-// 
-//
-//
-//
-//
-//
 // 左旋操作
 void AVLTree::left_rotate(Node* pNode_)
 {
+	if (!pNode_ || !pNode_->m_pRight)
+		return;
 
+	Node* _pParent = pNode_->m_pParent;	 	// 父结点
+	Node* _pRightNode = pNode_->m_pRight;	// 右子结点
+
+	// 使用右子结点的左子树代替当前的右子结点。
+	pNode_->m_pRight = _pRightNode->m_pLeft;
+	if (pNode_->m_pRight)
+		pNode_->m_pRight->m_pParent = pNode_;
+
+	// 把当前结点作为右子结点的左子树
+	_pRightNode->m_pLeft = pNode_;
+	pNode_->m_pParent = _pRightNode;
+
+	// 更新右子结点与父结点的关系
+	_pRightNode->m_pParent = _pParent;
+	if (_pParent  && _pParent->m_pLeft == pNode_)	// 父结点不为空且为左子结点
+		_pParent->m_pLeft = _pRightNode;
+	else if (_pParent && _pParent->m_pRight == pNode_)	// 父结点不为空且为右子结点
+		_pParent->m_pRight = _pRightNode;
+	else   // 如果父结点为空，则需要更新根结点
+		m_pRoot = _pRightNode;
 }
 
 // 右旋操作
@@ -321,3 +313,75 @@ int main(int argc, char* argv[])
 	return 0;
 }
 
+
+
+// 补充说明：
+// 关于左旋与右旋操作
+// 在二叉搜索树时，发生左旋的情况有2种，一种是当前结点的平衡因子为-2时需要左旋。另一种当
+// 需要双旋操作时，第一次旋转也需要左旋，此时它的平衡因子为-1.
+// 情况一：当前结点的平衡因子为-2, 右子结点的平衡因子为0时：
+//          1                                   3
+//            \           对1左旋              /  \
+//             3      =============>          1    5
+//            /  \                             \
+//           4    5                             4
+//   此时情况只会发生在删除节点时,  a. 树的高度不变。
+//                                  b. 当前结点的平衡因子由-2变为-1.
+//                                  c. 右子结点的平衡因子由0变为1.
+//
+// 情况二：当前结点的平衡因子为-2, 右子结点的平衡因子为-1时：
+//           1                             
+//            \        对1左旋            
+//             2     ============>          2
+//              \                          /  \
+//               3                        1    3
+//   此种情况可能发生在删除和插入时，a. 树的高度减少1
+//                                   b. 当前结点的平衡因子由-2变为0 
+//                                   c. 右子结点的平衡因子由-1变为0
+//
+// 情况三：当前结点的平衡因子为-2, 右子结点的平衡因子为-2时：
+//          1                                1                             4
+//        /   \                            /   \                         /   \
+//       2     3          对3右旋         2     4         对1左旋       1     3
+//           /   \      ==========>               \     ========>      /     /  \
+//          4     5                                3                  2     6    5
+//           \                                   /  \
+//            6                                 6     5
+//   此种情况发生在双旋的第二次是左旋的时, a. 树的高度减少1
+//                                         b. 当前结点的平衡因子由-2变为1
+//                                         c. 右子结点的平衡因子由-2变为0
+//
+// 情况四：当前结点的平衡因子为-1, 右子结点的平衡因子为0时：
+//            1                                 1
+//           /                                 /
+//          2           对2进行左旋           3
+//           \       ==============>         /
+//            3                             2
+//    此种情况发生在双旋的第一次为左旋时，a. 树的高度不变
+//                                        b. 当前结点的平衡因子由-1变为0
+//                                        c. 右子结点的平衡因子由0变为1
+//
+// 情况五：当前结点的平衡因子为-1, 右子结点的平衡因子为-1时：
+//        1                                      1
+//       /  \                                   /  \
+//      2    3          对2进行左旋            5    3
+//     / \            ==========>            /  \
+//    4   5                                 2    6
+//         \                              /
+//          6                            4
+//   此种情况下发生在第一次为左旋的时候， a. 树的高度不变
+//                                        b. 当前结点的平衡因子由-1变为1
+//                                        c. 左子结点的平衡因子由-1变为1.
+//
+// 情况六： 当前结点的的平衡因子为-1, 右子结点的平衡因子为1时：
+//          1                                      1
+//        /  \                                    /  \
+//       2    3          对2进行左旋             5    3
+//     /  \            ==============>          /
+//    4    5                                   2
+//        /                                   / \
+//       6                                   4   6
+//  此种情况下发生在双旋的第一次为左旋时， a. 树的高度不变
+//                                         b. 当前结点的平衡因子由-1变为0
+//                                         c. 右子结点的平衡因子由1变为2.
+//
