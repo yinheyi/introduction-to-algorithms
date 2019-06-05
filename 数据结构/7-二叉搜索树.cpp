@@ -10,7 +10,7 @@
 *   Email: chinayinheyi@163.com
 *   Version: 1.0
 *   Created Time: 2019年05月18日 星期六 16时37分28秒
-*   Modifed Time: 2019年05月19日 星期日 22时56分39秒
+*   Modifed Time: 2019年06月05日 星期三 21时58分24秒
 *   Blog: http://www.cnblogs.com/yinheyi
 *   Github: https://github.com/yinheyi
 *   
@@ -263,7 +263,7 @@ void Delete(Node*& pRoot_, Node* pDeleteNode_)
 	if (nullptr == pRoot_ || nullptr == pDeleteNode_)
 		return;
 
-	if (pDeleteNode_->m_pLeft == nullptr || pDeleteNode_->m_pRight == nullptr)
+	if (pDeleteNode_->m_pLeft == nullptr && pDeleteNode_->m_pRight == nullptr)
 	{
 		// 使用空结点代替被删除的结点。
 		Transplant(pRoot_, pDeleteNode_, nullptr);
