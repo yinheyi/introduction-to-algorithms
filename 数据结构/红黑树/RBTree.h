@@ -10,12 +10,12 @@
 *   Email: chinayinheyi@163.com
 *   Version: 1.0
 *   Created Time: 2019年06月08日 星期六 10时03分26秒
-*   Modifed Time: 2019年06月08日 星期六 14时18分34秒
+*   Modifed Time: 2019年06月09日 星期日 23时13分25秒
 *   Blog: http://www.cnblogs.com/yinheyi
 *   Github: https://github.com/yinheyi
 *   
 ***********************************************************************/
-typedef unsigned int size_t;
+typedef unsigned long int size_t;
 
 
 // 定义一个枚举类型，表示红黑树的颜色
@@ -59,7 +59,7 @@ protected:
 	void left_rotate(RBNode* pNode_);				// 左旋操作
 	void right_rotate(RBNode* pNode_);				// 右旋操作
 	void insert_fixup(RBNode* pNode_);				// 插入之后调整红黑树，使其符合红黑树的性质
-	void erase_fixup(RBNode* pNode_);				// 删除之后调整红黑树，使其符合红黑树的性质
+	void erase_fixup(RBNode* pNode_, RBNode* pParent_);	// 删除之后调整红黑树，使其符合红黑树的性质
 	RBNode* sibling(RBNode* pNode_) const;			// 获取给定结点的兄弟结点
 	void free_memory(RBNode* pNode);				// 释放给定红黑树的内存空间
 private:
