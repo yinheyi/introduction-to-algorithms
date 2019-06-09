@@ -10,7 +10,7 @@
 *   Email: chinayinheyi@163.com
 *   Version: 1.0
 *   Created Time: 2019年05月18日 星期六 16时38分00秒
-*   Modifed Time: 2019年06月09日 星期日 23时12分31秒
+*   Modifed Time: 2019年06月09日 星期日 23时50分13秒
 *   Blog: http://www.cnblogs.com/yinheyi
 *   Github: https://github.com/yinheyi
 *   
@@ -115,6 +115,7 @@ bool RBTree::erase(RBNode* pNode_)
 			erase_fixup(nullptr, pNode_->m_pParent);
 
 		delete pNode_;
+		--m_nSize;
 		return true;
 	}
 
@@ -133,6 +134,7 @@ bool RBTree::erase(RBNode* pNode_)
 		}
 
 		delete pNode_;
+		--m_nSize;
 		return true;
 	}
 
@@ -150,6 +152,7 @@ bool RBTree::erase(RBNode* pNode_)
 		}
 
 		delete pNode_;
+		--m_nSize;
 		return true;
 	}
 
@@ -201,6 +204,7 @@ bool RBTree::erase(RBNode* pNode_)
 	}
 
 	delete pNode_;
+	--m_nSize;
 	return true;
 }
 
