@@ -10,7 +10,7 @@
 *   Email: chinayinheyi@163.com
 *   Version: 1.0
 *   Created Time: 2019年06月16日 星期日 21时43分38秒
-*   Modifed Time: 2019年06月16日 星期日 22时11分24秒
+*   Modifed Time: 2019年06月16日 星期日 22时37分45秒
 *   Blog: http://www.cnblogs.com/yinheyi
 *   Github: https://github.com/yinheyi
 *   
@@ -20,7 +20,7 @@
 #include <queue>
 typedef void (*Callback)(vertex*);
 
-// 给定一个图的顶点，进行广度优先搜索
+// 假设一个无向图是连通的，给定一个图的顶点，进行广度优先搜索, 就可以把所有顶点都遍历完成。
 void BreadthFirstSearch(vertex* pVertex_, Callback pFunc_)
 {
 	if (!pVertex_)
